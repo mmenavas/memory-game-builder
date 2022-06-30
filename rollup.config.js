@@ -1,34 +1,39 @@
-import typescript from 'rollup-plugin-typescript2';
-import pkg from './package.json';
-import { terser } from "rollup-plugin-terser";
+import resolve from '@rollup/plugin-node-resolve'
+import commonjs from '@rollup/plugin-commonjs'
+import typescript from '@rollup/plugin-typescript'
+import dts from 'rollup-plugin-dts'
+import { terser } from 'rollup-plugin-terser'
+import peerDepsExternal from 'rollup-plugin-peer-deps-external'
 
-// delete old typings to avoid issues
-require('fs').unlink('lib/index.d.ts', (err) => { });
+const packageJson = require('./package.json')
 
-export default {
-  input: 'src/index.ts',
-  output: [
-    {
-      file: pkg.main,
-      format: 'cjs'
-    },
-    {
-      file: pkg.module,
-      format: 'es'
-    },
-    {
-      file: pkg.browser,
-      format: 'iife',
-      name: 'Tile'
-    }
-  ],
-  external: [
-    ...Object.keys(pkg.dependencies || {})
-  ],
-  plugins: [
-    typescript({
-      typescript: require('typescript'),
-    }),
-    terser()
-  ]
-};
+export default [
+  {
+    input: 'src/index.ts',
+    output: [
+      {
+        file: packageJson.main,
+        format: 'cjs',
+        sourcemap: true,
+      },
+      {
+        file: packageJson.module,
+        format: 'esm',
+        sourcemap: true,
+      },
+    ],
+    plugins: [
+      peerDepsExternal(),
+      resolve(),
+      commonjs(),
+      typescript({ tsconfig: './tsconfig.json' }),
+      terser(),
+    ],
+    external: []
+  },
+  {
+    input: 'dist/esm/types/index.d.ts',
+    output: [{ file: 'dist/index.d.ts', format: 'esm' }],
+    plugins: [dts()],
+  },
+]
