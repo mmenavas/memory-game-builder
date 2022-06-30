@@ -2,7 +2,7 @@
   "name": "@mmenavas/memory-game-builder",
   "author": "Maximo Mena",
   "license": "ISC",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "A JavaScript library for building memory games",
   "keywords": [
     "brain",
@@ -19,9 +19,10 @@
     "url": "https://github.com/mmenavas/memory-game-builder/issues"
   },
   "main": "dist/cjs/index.js",
+  "typings": "dist/index",
   "module": "dist/esm/index.js",
   "files": [
-    "dist"
+    "dist/**/*"
   ],
   "scripts": {
     "test": "jest --config jest.config.json",
