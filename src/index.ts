@@ -1,4 +1,3 @@
-export const Greeter = (name: string) => `Hello ${name}`;
-export const CurrentYear = () => {
-  return 2022;
-};
+import Tile from './models/Tile'
+
+export { Tile }

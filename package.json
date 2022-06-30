@@ -19,10 +19,15 @@
     "url": "https://github.com/mmenavas/memory-game-builder/issues"
   },
   "main": "lib/index.js",
+  "module": "lib/index.es.js",
+  "browser": "lib/index.bundle.js",
   "types": "lib/index.d.ts",
+  "files": [
+    "lib/**/*"
+  ],
   "scripts": {
     "test": "jest --config jest.config.json",
-    "build": "tsc",
+    "build": "rollup -c && tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json"
   },
@@ -35,7 +40,9 @@
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^4.7.4"
   },
-  "files": [
-    "lib/**/*"
-  ]
+  "dependencies": {
+    "rollup": "^2.75.7",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.32.1"
+  }
 }
