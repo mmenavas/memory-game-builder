@@ -1,140 +1,127 @@
-import shuffle from 'lodash/fp/shuffle'
-import cloneDeep from 'lodash/fp/cloneDeep'
-import Tile from './Tile'
-
+import Board from './Board'
 
 export default class FlipATileGame {
-  tiles: Tile<string>[] = []
+  board: Board<string>
   attempts = 0
+  mismatches = 0
   mistakes = 0
-  isGameOver = false
+  revealedTiles: number[] = []
+  matches: number[] = []
+  currentTurn: [number, number] = [-1, -1]
+  gameOver = false
 
-  constructor(tiles: Tile<string>[]) {
-    const clonedTiles= cloneDeep(tiles)
-    this.tiles = [...tiles, ...clonedTiles]
+  constructor(board: Board<string>) {
+    this.board = board
   }
 
-  /**
-   * Start a new game.
-   */
   startGame() {
     this.attempts = 0
     this.mistakes = 0
-    this.isGameOver = false
-    this.concealAll()
-    this.shuffle()
-
-    return this.tiles
-  }
-
-  concealAll() {
-    for (let i = 0; i < this.tiles.length; i++) {
-      this.tiles[i].conceal()
-    }
-  }
-
-  shuffle() {
-    const clonedTiles = cloneDeep(this.tiles)
-    this.tiles = shuffle(clonedTiles)
+    this.revealedTiles = []
+    this.currentTurn = [-1, -1]
+    this.gameOver = false
+    this.board.reset()
   }
 
   toString() {
-    let output = ''
-    for (let i = 0; i < this.tiles.length; i++) {
-      output = output + this.tiles[i].value
-      if (i < this.tiles.length - 1) {
-        output = output + '||'
-      }
-    }
-    return output
+    return `
+      Attempts: ${this.attempts}
+      Mismatches: ${this.mismatches}
+      Mistakes: ${this.mistakes}
+      Revealed: ${this.revealedTiles}
+      Matches:  ${this.matches}
+      Current Turn:  ${this.currentTurn}
+      Game Over:  ${this.gameOver}
+      Board: ${this.board.toString()}
+    `
   }
 
-  // /**
-  //  * A player gets to flip two cards. This function returns information
-  //  * about what happens when a card is selected
-  //  *
-  //  * @param {number} Index of card selected by player
-  //  * @return {object} {code: number, message: string, args: array or number}
-  //  */
-  // play: (function() {
-  //   var cardSelection = [];
-  //   var revealedCards = 0;
-  //   var revealedValues = [];
+  play(index: number) {
+    if (this.isGameOver()) {
+      throw 'Game is over'
+    }
 
-  //   return function(index) {
-  //     var status = {};
-  //     var value = this.cards[index].value;
+    if (this.board.isRevealedAt(index)) {
+      throw 'Tile is already revealed'
+    }
 
-  //     if (!this.cards[index].isRevealed) {
-  //       this.cards[index].reveal();
-  //       cardSelection.push(index);
-  //       if (cardSelection.length == 2) {
-  //         this.attempts++;
-  //         if (this.cards[cardSelection[0]].value !=
-  //             this.cards[cardSelection[1]].value) {
-  //           // No match
-  //           this.cards[cardSelection[0]].conceal();
-  //           this.cards[cardSelection[1]].conceal();
-  //           /**
-  //            * Algorithm to determine a mistake.
-  //            * Check if the pair of at least
-  //            * one card has been revealed before
-  //            *
-  //            * indexOf return -1 if value is not found
-  //            */
-  //           var isMistake = false;
+    this.board.revealAt(index)
 
-  //           if (revealedValues.indexOf(this.cards[cardSelection[0]].value) === -1) {
-  //             revealedValues.push(this.cards[cardSelection[0]].value);
-  //           }
-  //           else {
-  //             isMistake = true;
-  //           }
+    // Return if we're revealing the first tile of the current turn.
+    if (this.currentTurn[0] === -1) {
+      this.currentTurn[0] = index
+      return
+    }
 
-  //           if (revealedValues.indexOf(this.cards[cardSelection[1]].value) === -1) {
-  //             revealedValues.push(this.cards[cardSelection[1]].value);
-  //           }
+    this.currentTurn[1] = index
+    this.attempts++
 
-  //           if (isMistake) {
-  //             this.mistakes++;
-  //           }
+    if (!this.isMatch()) {
+      this.mismatches++
+      if (this.isMistake()) {
+        this.mistakes++
+      }
+      this.addRevealedTiles()
+      this.concealTiles()
+      this.resetCurrentTurn()
+      return
+    }
 
-  //           revealedValues.push(this.cards[cardSelection[0]].value);
+    // Record match.
+    this.matches.push(this.currentTurn[0])
+    this.matches.push(this.currentTurn[1])
+    this.currentTurn = [-1, -1]
 
-  //           status.code = 3,
-  //           status.message = 'No Match. Conceal cards.';
-  //           status.args = cardSelection;
-  //         }
-  //         else {
-  //           revealedCards += 2;
-  //           if (revealedCards == this.cards.length) {
-  //             // Game over
-  //             this.isGameOver = true;
-  //             revealedCards = 0;
-  //             revealedValues = [];
-  //             status.code = 4,
-  //             status.message = 'GAME OVER! Attempts: ' + this.attempts +
-  //                 ', Mistakes: ' + this.mistakes;
-  //           }
-  //           else {
-  //             status.code = 2,
-  //             status.message = 'Match.';
-  //           }
-  //         }
-  //         cardSelection = [];
-  //       }
-  //       else {
-  //         status.code = 1,
-  //         status.message = 'Flip first card.';
-  //       }
-  //     }
-  //     else {
-  //       status.code = 0,
-  //       status.message = 'Card is already facing up.';
-  //     }
+    // Check if it's game over.
+    if (this.isGameOver()) {
+      this.gameOver = true
+    }
+  }
 
-  //     return status;
+  isMatch(): boolean {
+    return this.board.getAt(this.currentTurn[0]).value === this.board.getAt(this.currentTurn[1]).value
+  }
 
-  //   };
-  // })()
+  isMistake(): boolean {
+    if (this.isMatch()) {
+      return false
+    }
+
+    const value = this.board.getAt(this.currentTurn[0]).value
+    const matches = this.revealedTiles.filter((item) => {
+      return this.board.getAt(item).value === value
+    })
+
+    return matches.length > 0
+  }
+
+  isGameOver(): boolean {
+    return this.matches.length === this.board.getSize()
+  }
+
+  addRevealedTiles() {
+    this.addRevealedTile(this.currentTurn[0])
+    this.addRevealedTile(this.currentTurn[1])
+  }
+
+  addRevealedTile(index: number) {
+    if (index < this.board.getSize() && !this.revealedTiles.includes(index)) {
+      this.revealedTiles.push(index)
+    }
+  }
+
+  concealTiles() {
+    this.concealTile(this.currentTurn[0])
+    this.concealTile(this.currentTurn[1])
+  }
+
+  concealTile(index: number) {
+    if (index < this.board.getSize()) {
+      this.board.concealAt(index)
+    }
+  }
+
+  resetCurrentTurn() {
+    this.currentTurn = [-1, -1]
+  }
 }

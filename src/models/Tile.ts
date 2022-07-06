@@ -19,4 +19,15 @@ export default class Tile<Type> {
     this.isRevealed = !this.isRevealed
   }
 
+  toString() {
+    if (!this.isRevealed) {
+      return "?"
+    }
+    if (typeof this.value === 'string' ||
+      typeof this.value === 'number') {
+      return this.value.toString()
+    }
+    return JSON.stringify(this.value)
+  }
+
 } 

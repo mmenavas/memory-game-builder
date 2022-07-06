@@ -1,38 +1,41 @@
-import Tile from '../Tile'
 import FlipATileGame from '../FlipATileGame'
-// import { compareTiles } from '../../utils/helpers'
+import Board from '../Board'
+import Tile from '../Tile'
 
-describe('Test Tile class', () => {
+describe('Test FlipATileGame class', () => {
 
-  test('constructor', () => {
-    const tile1 = new Tile('A')
-    const tile2 = new Tile('B')
-    const game = new FlipATileGame([tile1, tile2])
-    expect(game.tiles).toEqual([tile1, tile2, tile1, tile2])
+    test('No mistakes', () => {
+    const tile1 = new Tile('A', true)
+    const tile2 = new Tile('B', true)
+    const board = new Board([tile1, tile2])
+    const game = new FlipATileGame(board)
+    game.board.concealAll()
+    game.play(0)
+    game.play(1)
+
+    game.play(2)
+    game.play(0)
+
+    game.play(1)
+    game.play(3)
+    expect(game.mistakes).toEqual(0)
   })
 
-  test('concealAll', () => {
-    const tile1 = new Tile('A')
-    const tile2 = new Tile('B')
-    tile1.reveal()
-    const game = new FlipATileGame([tile1, tile2])
-    expect(game.tiles[0].isRevealed).toEqual(true)
-    expect(game.tiles[1].isRevealed).toEqual(false)
-    expect(game.tiles[2].isRevealed).toEqual(true)
-    expect(game.tiles[3].isRevealed).toEqual(false)
-    game.concealAll()
-    expect(game.tiles[0].isRevealed).toEqual(false)
-    expect(game.tiles[1].isRevealed).toEqual(false)
-    expect(game.tiles[2].isRevealed).toEqual(false)
-    expect(game.tiles[3].isRevealed).toEqual(false)
+  test('One mistake', () => {
+    const tile1 = new Tile('A', true)
+    const tile2 = new Tile('B', true)
+    const board = new Board([tile1, tile2])
+    const game = new FlipATileGame(board)
+    game.board.concealAll()
+    game.play(0)
+    game.play(1)
+    game.play(2)
+    game.play(3)
+    game.play(0)
+    game.play(2)
+    game.play(1)
+    game.play(3)
+    expect(game.mistakes).toEqual(1)
   })
-
-  // test('shuffle', () => {
-  //   const tile1 = new Tile('A')
-  //   const tile2 = new Tile('B')
-  //   const game = new FlipATileGame([tile1, tile2])
-  //   game.shuffle()
-  //   expect(game.tiles.sort(compareTiles)).toEqual([tile1, tile2, tile1, tile2].sort(compareTiles))
-  // })
 
 })
