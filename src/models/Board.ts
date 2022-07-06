@@ -2,7 +2,7 @@ import shuffle from 'lodash/fp/shuffle'
 import cloneDeep from 'lodash/fp/cloneDeep'
 import Tile from './Tile'
 
-export default class FlipATileGame<Type> {
+export default class Board<Type> {
 
   tiles: Tile<Type>[] = []
 
