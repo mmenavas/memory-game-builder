@@ -90,9 +90,9 @@ export default class FlipATileGame {
     }
 
     // Record match.
-    this.matches.push(this.currentTurn[0])
-    this.matches.push(this.currentTurn[1])
-    this.currentTurn = [-1, -1]
+    this.addRevealedTiles()
+    this.recordMatch()
+    this.resetCurrentTurn()
 
     // Check if it's game over.
     if (this.isGameOver()) {
@@ -175,6 +175,14 @@ export default class FlipATileGame {
     if (index < this.board.getSize()) {
       this.board.concealAt(index)
     }
+  }
+
+  /**
+   * Add postion of revealed pair of tiles.
+   */
+  private recordMatch():void {
+    this.matches.push(this.currentTurn[0])
+    this.matches.push(this.currentTurn[1])
   }
 
   /**
