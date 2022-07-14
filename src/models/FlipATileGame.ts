@@ -4,7 +4,11 @@ import Board from './Board'
  * The implementation for a FlipATileGame.
  */
 export default class FlipATileGame {
+  // Attributes.
   board: Board<string>
+  timeoutDuration = 500
+  // State.
+  isTimeoutOn = false
   attempts = 0
   mismatches = 0
   mistakes = 0
@@ -17,9 +21,13 @@ export default class FlipATileGame {
    * Constructor for FlipATileGame.
    * 
    * @param {Board} board A Board object containing tiles
+   * @param {number} mismatchTimeout How many miliseconds
+   *   cards should be revealed before they're concealed on
+   *   a mismatch.
    */
-  constructor(board: Board<string>) {
+  constructor(board: Board<string>, timeoutDuration = 500) {
     this.board = board
+    this.timeoutDuration = timeoutDuration
   }
 
   /**
@@ -27,6 +35,7 @@ export default class FlipATileGame {
    */
   startGame():void {
     this.attempts = 0
+    this.isTimeoutOn = false 
     this.mistakes = 0
     this.revealedTiles = []
     this.currentTurn = [-1, -1]
@@ -43,6 +52,7 @@ export default class FlipATileGame {
     return `
       Attempts: ${this.attempts}
       Mismatches: ${this.mismatches}
+      In Timeout: ${this.isTimeoutOn}
       Mistakes: ${this.mistakes}
       Revealed: ${this.revealedTiles}
       Matches:  ${this.matches}
@@ -59,6 +69,10 @@ export default class FlipATileGame {
    * @returns {string} The resulting status of selecting a tile.
    */
   play(index: number): string {
+    if (this.isTimeoutOn) {
+      throw 'inTimeout'
+    }
+
     if (this.isGameOver()) {
       throw 'gameOverError'
     }
@@ -83,9 +97,13 @@ export default class FlipATileGame {
       if (this.isMistake()) {
         this.mistakes++
       }
-      this.addRevealedTiles()
-      this.concealTiles()
-      this.resetCurrentTurn()
+      this.isTimeoutOn = true
+      setTimeout(() => {
+        this.addRevealedTiles()
+        this.concealTiles()
+        this.resetCurrentTurn()
+        this.isTimeoutOn = false
+      }, this.timeoutDuration)
       return 'notAMatch'
     }
 
