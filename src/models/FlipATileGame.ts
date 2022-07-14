@@ -66,9 +66,9 @@ export default class FlipATileGame {
    * Select a tile to reveal it.
    * 
    * @param {number} index The selected tile.
-   * @returns {string} The resulting status of selecting a tile.
+   * @returns {Promise<string>} The resulting status of selecting a tile.
    */
-  play(index: number): string {
+  play(index: number): Promise<string> {
     if (this.isTimeoutOn) {
       throw 'inTimeout'
     }
@@ -86,7 +86,7 @@ export default class FlipATileGame {
     // Return if we're revealing the first tile of the current turn.
     if (this.currentTurn[0] === -1) {
       this.currentTurn[0] = index
-      return 'firstTileRevealed'
+      return Promise.resolve('firstTileRevealed')
     }
 
     this.currentTurn[1] = index
@@ -98,13 +98,16 @@ export default class FlipATileGame {
         this.mistakes++
       }
       this.isTimeoutOn = true
-      setTimeout(() => {
-        this.addRevealedTiles()
-        this.concealTiles()
-        this.resetCurrentTurn()
-        this.isTimeoutOn = false
-      }, this.timeoutDuration)
-      return 'notAMatch'
+      const _this = this
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          _this.addRevealedTiles()
+          _this.concealTiles()
+          _this.resetCurrentTurn()
+          _this.isTimeoutOn = false
+          resolve('notAMatch')
+        }, _this.timeoutDuration)
+      })
     }
 
     // Record match.
@@ -115,10 +118,10 @@ export default class FlipATileGame {
     // Check if it's game over.
     if (this.isGameOver()) {
       this.gameOver = true
-      return 'allTilesRevealed'
+      return Promise.resolve('allTilesRevealed')
     }
 
-    return 'match'
+    return Promise.resolve('match')
 
   }
 
