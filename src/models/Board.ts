@@ -1,14 +1,21 @@
 import shuffle from 'lodash/fp/shuffle'
 import cloneDeep from 'lodash/fp/cloneDeep'
 import Tile from './Tile'
+import MatchingTiles from './MatchingTiles'
 
 export default class Board<Type> {
 
   tiles: Tile<Type>[] = []
 
-  constructor(tiles: Tile<Type>[]) {
-    const clonedTiles = cloneDeep(tiles)
-    this.tiles = [...tiles, ...clonedTiles]
+  constructor(tiles: Tile<Type>[], clone = true) {
+    if (clone) {
+      const tileTuples = tiles.map(tile => new MatchingTiles<Type>(tile).tiles)
+      this.tiles = tileTuples.reduce(((acc: Tile<Type>[], tuple) => [...acc, tuple[0], tuple[1]]), [])
+    }
+    else {
+      this.validateTiles(tiles)
+      this.tiles = tiles
+    }
   }
 
   getSize() {
@@ -65,6 +72,27 @@ export default class Board<Type> {
       }
     }
     return output
+  }
+
+  validateTiles(tiles: Tile<Type>[]) {
+    if (tiles.length < 2) {
+      throw('Number of tiles must be greater than 2.')
+
+    }
+    if ((tiles.length % 2) !== 0) {
+      throw('Number of tiles must be even.')
+    }
+    const idCounter = tiles.reduce((acc: Map<string, number>, tile:Tile<Type>) => {
+      if (acc.has(tile.id)) {
+        return acc.set(tile.id, acc.get(tile.id)! + 1)
+      }
+      return acc.set(tile.id, 1)
+    }, new Map<string, number>())
+
+    const oddCounts = [...idCounter.values()].filter(item => (item % 2) !== 0)
+    if (oddCounts.length > 0) {
+      throw('All tiles should have a tile with a matching id.')   
+    }
   }
 
 }

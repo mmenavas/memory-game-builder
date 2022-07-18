@@ -122,7 +122,6 @@ export default class FlipATileGame {
     }
 
     return Promise.resolve('match')
-
   }
 
   /**
@@ -131,7 +130,7 @@ export default class FlipATileGame {
    * @returns {boolean} Whether or not selected pair of tiles is a match.
    */
   private isMatch(): boolean {
-    return this.board.getAt(this.currentTurn[0]).value === this.board.getAt(this.currentTurn[1]).value
+    return this.board.getAt(this.currentTurn[0]).id === this.board.getAt(this.currentTurn[1]).id
   }
 
   /**
@@ -143,9 +142,9 @@ export default class FlipATileGame {
       return false
     }
 
-    const value = this.board.getAt(this.currentTurn[0]).value
+    const id = this.board.getAt(this.currentTurn[0]).id
     const matches = this.revealedTiles.filter((item) => {
-      return this.board.getAt(item).value === value
+      return this.board.getAt(item).id === id
     })
 
     return matches.length > 0

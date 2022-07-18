@@ -1,10 +1,14 @@
+import uniqueId from 'lodash/fp/uniqueId'
+
 export default class Tile<Type> {
-  value: Type
+  id: string
+  data: Type
   isRevealed: boolean
 
-  constructor(value: Type, isRevealed = false) {
-    this.value = value
+  constructor(data: Type, isRevealed = false, id = '') {
+    this.data = data
     this.isRevealed = isRevealed
+    this.id = (id === '') ? uniqueId('tile_') : id
   }
 
   reveal() {
@@ -23,11 +27,7 @@ export default class Tile<Type> {
     if (!this.isRevealed) {
       return "?"
     }
-    if (typeof this.value === 'string' ||
-      typeof this.value === 'number') {
-      return this.value.toString()
-    }
-    return JSON.stringify(this.value)
+    return this.id
   }
 
 } 

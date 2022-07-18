@@ -13,11 +13,11 @@ describe('Test FlipATileGame class', () => {
     game.play(0)
       .then(result => {
         expect(result).toBe('firstTileRevealed')
-        return game.play(1)
+        return game.play(2)
       })
       .then(result => {
         expect(result).toBe('notAMatch')
-        return game.play(2)
+        return game.play(1)
       })
       .then(result => {
         expect(result).toBe('firstTileRevealed')
@@ -25,7 +25,7 @@ describe('Test FlipATileGame class', () => {
       })
       .then(result => {
         expect(result).toBe('match')
-        return game.play(1)
+        return game.play(2)
       })
       .then(result => {
         expect(result).toBe('firstTileRevealed')
@@ -45,15 +45,15 @@ describe('Test FlipATileGame class', () => {
     const game = new FlipATileGame(board, 100)
     game.board.concealAll()
     await game.play(0)
-    await game.play(1)
-
     await game.play(2)
+
+    await game.play(1)
     await game.play(3)
 
     await game.play(0)
-    await game.play(2)
-
     await game.play(1)
+
+    await game.play(2)
     await game.play(3)
     expect(game.mistakes).toEqual(1)
   })
