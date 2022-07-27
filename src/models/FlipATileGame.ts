@@ -143,17 +143,25 @@ export default class FlipATileGame {
    * @returns {boolean} Whether or not the player made a mistake.
    */
   private isMistake(): boolean {
+    // If there's a match, then there's no mistake.
     if (this.isMatch()) {
       return false
     }
 
     const id1 = this.board.getAt(this.currentTurn[0]).id
-    const id2 = this.board.getAt(this.currentTurn[1]).id
-    const matches = this.revealedTiles.filter((item) => {
-      return this.board.getAt(item).id === id1 || this.board.getAt(item).id === id2
+    const matches1 = this.revealedTiles.filter((item) => {
+      return this.board.getAt(item).id === id1
     })
 
-    return matches.length > 0
+    // If the value of the first tile had been revealed previously
+    // then surely a mistake was made.
+    if (matches1.length > 0) {
+      return true
+    }
+
+    // If the second tile was a previously selected tile and there's
+    // no match, a mistake was made. 
+    return this.revealedTiles.includes(this.currentTurn[1])
   }
 
   /**
