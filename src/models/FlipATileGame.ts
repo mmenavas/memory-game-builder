@@ -134,7 +134,12 @@ export default class FlipATileGame {
   }
 
   /**
-   * Did the player revealed a card previously revealed and failed to make a match.
+   * A mistake is a mismatch that could have been prevented.
+   * 
+   * It occurs when a player reveals a new tile that matches
+   * a previously revealed one but fails to make a match
+   * when selecting the second tile.
+   * 
    * @returns {boolean} Whether or not the player made a mistake.
    */
   private isMistake(): boolean {
@@ -142,9 +147,10 @@ export default class FlipATileGame {
       return false
     }
 
-    const id = this.board.getAt(this.currentTurn[0]).id
+    const id1 = this.board.getAt(this.currentTurn[0]).id
+    const id2 = this.board.getAt(this.currentTurn[1]).id
     const matches = this.revealedTiles.filter((item) => {
-      return this.board.getAt(item).id === id
+      return this.board.getAt(item).id === id1 || this.board.getAt(item).id === id2
     })
 
     return matches.length > 0

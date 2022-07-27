@@ -5,7 +5,6 @@ describe('Test Tile class', () => {
   test('constructor', () => {
     const data = 'Spiderman'
     const tile = new Tile<string>(data, true)
-    console.log(tile)
     expect(tile.data).toBe(data)
     expect(tile.isRevealed).toBe(true)
   })
