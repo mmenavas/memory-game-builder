@@ -58,4 +58,20 @@ describe('Test FlipATileGame class', () => {
     expect(game.mistakes).toEqual(1)
   })
 
+    test('Another mistake', async () => {
+    const tile1 = new Tile('A', true)
+    const tile2 = new Tile('B', true)
+    const tile3 = new Tile('C', true)
+    const board = new Board([tile1, tile2, tile3])
+    const game = new FlipATileGame(board, 100)
+    game.board.concealAll()
+    await game.play(0)
+    await game.play(2)
+
+    await game.play(4)
+    await game.play(0)
+
+    expect(game.mistakes).toEqual(1)
+  })
+
 })
