@@ -2,7 +2,7 @@
   "name": "@mmenavas/memory-game-builder",
   "author": "Maximo Mena",
   "license": "ISC",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A JavaScript library for building memory games and quizzes.",
   "keywords": [
     "quizz maker",
