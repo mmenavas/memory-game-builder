@@ -2,13 +2,12 @@
   "name": "@mmenavas/memory-game-builder",
   "author": "Maximo Mena",
   "license": "ISC",
-  "version": "0.4.2",
-  "description": "A JavaScript library for building memory games",
+  "version": "1.0.0",
+  "description": "A JavaScript library for building memory games and quizzes.",
   "keywords": [
-    "brain",
-    "memory",
-    "workout",
-    "exercise"
+    "quizz maker",
+    "brain workout",
+    "memory exercise"
   ],
   "homepage": "https://github.com/mmenavas/memory-game-builder#readme",
   "repository": {

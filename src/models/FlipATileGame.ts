@@ -3,9 +3,9 @@ import Board from './Board'
 /**
  * The implementation for a FlipATileGame.
  */
-export default class FlipATileGame {
+export default class FlipATileGame<Type> {
   // Attributes.
-  board: Board<string>
+  board: Board<Type>
   timeoutDuration = 500
   // State.
   isTimeoutOn = false
@@ -25,7 +25,7 @@ export default class FlipATileGame {
    *   cards should be revealed before they're concealed on
    *   a mismatch.
    */
-  constructor(board: Board<string>, timeoutDuration = 500) {
+  constructor(board: Board<Type>, timeoutDuration = 500) {
     this.board = board
     this.timeoutDuration = timeoutDuration
   }

@@ -44,48 +44,67 @@ describe('Test FlipATileGame class', () => {
     const board = new Board([tile1, tile2])
     const game = new FlipATileGame(board, 100)
     game.board.concealAll()
-    await game.play(0)
-    await game.play(2)
+    await game.play(0) // A
+    await game.play(2) // B
 
-    await game.play(1)
-    await game.play(3)
+    await game.play(1) // A
+    await game.play(3) // B <-- The mistake.
 
-    await game.play(0)
-    await game.play(1)
+    await game.play(0) // A
+    await game.play(1) // A
 
-    await game.play(2)
-    await game.play(3)
+    await game.play(2) // B
+    await game.play(3) // B
     expect(game.mistakes).toEqual(1)
   })
 
-  test('Another mistake', async () => {
+  test('Mistake due to selecting a previously revealed tile that resulted in a mismatch', async () => {
     const tile1 = new Tile('A', true)
     const tile2 = new Tile('B', true)
     const tile3 = new Tile('C', true)
     const board = new Board([tile1, tile2, tile3])
     const game = new FlipATileGame(board, 100)
     game.board.concealAll()
-    await game.play(0)
-    await game.play(2)
+    await game.play(0) // A
+    await game.play(2) // B
 
-    await game.play(4)
-    await game.play(0)
+    await game.play(4) // C
+    await game.play(0) // A --> The mistake. 
 
     expect(game.mistakes).toEqual(1)
   })
 
-  test('Yes again another mistake', async () => {
+  test('Mismatch but no mistake', async () => {
     const tile1 = new Tile('A', true)
     const tile2 = new Tile('B', true)
     const tile3 = new Tile('C', true)
     const board = new Board([tile1, tile2, tile3])
     const game = new FlipATileGame(board, 100)
     game.board.concealAll()
+    await game.play(0) // A
+    await game.play(2) // B
+
+    await game.play(4) // C
+    await game.play(1) // A
+
+    expect(game.mistakes).toEqual(0)
+  })
+
+  test('Using numeric type instead of string', async () => {
+    const tile1 = new Tile(1, true)
+    const tile2 = new Tile(2, true)
+    const tile3 = new Tile(3, true)
+    const board = new Board([tile1, tile2, tile3])
+    const game = new FlipATileGame(board, 100)
+    game.board.concealAll()
     await game.play(0)
+    await game.play(1)
+
     await game.play(2)
+    await game.play(3)
 
     await game.play(4)
-    await game.play(1)
+    await game.play(5)
 
     expect(game.mistakes).toEqual(0)
   })
