@@ -20,7 +20,7 @@ Once the library is installed you can create a flip-a-tile game by
 following the code sample below:
 
 ```
-import { Tile, Board, FlipATileGame } from @mmenavas/memory-game-builder
+import { Tile, Board, FlipATileGame } from '@mmenavas/memory-game-builder'
 
 // Create the tiles for the board.
 const tile1 = new Tile('A')
@@ -39,7 +39,7 @@ const board = new Board([tile1, tile2, tile3])
 const game = new FlipATileGame(board, 500)
 
 // Reset counters and shuffle tiles.
-game.start()
+game.startGame()
 game.play(0)
   .then(result => {
     console.log(result) // should return 'firstTileRevealed'
